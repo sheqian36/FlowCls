@@ -14,7 +14,7 @@ def load_model(checkpoint, device):
     model = create_model(num_classes=5, has_logits=False).to(device)
     # load model weights
     assert os.path.exists(checkpoint), "file: '{}' dose not exist.".format(checkpoint)
-    model.load_state_dict(torch.load(model_weight_path, map_location=device))
+    model.load_state_dict(torch.load(checkpoint, map_location=device))
 
     return model
 
