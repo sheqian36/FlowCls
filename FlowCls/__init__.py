@@ -4,5 +4,4 @@ from . import train
 from . import utils
 from . import vit_model
 from . import Datasets
-from . import models
 from .predict import *

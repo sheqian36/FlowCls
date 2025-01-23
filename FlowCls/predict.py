@@ -10,7 +10,6 @@ from .vit_model import vit_base_patch16_224_in21k as create_model
 
 
 def load_model(checkpoint, device):
-
     model = create_model(num_classes=5, has_logits=False).to(device)
     # load model weights
     assert os.path.exists(checkpoint), "file: '{}' dose not exist.".format(checkpoint)
@@ -25,7 +24,7 @@ def load_img(img_path):
          transforms.CenterCrop(224),
          transforms.ToTensor(),
          transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
-    
+
     assert os.path.exists(img_path), "file: '{}' dose not exist.".format(img_path)
     img = Image.open(img_path)
     # [N, C, H, W]
@@ -33,22 +32,21 @@ def load_img(img_path):
     # # expand batch dimension
     img = torch.unsqueeze(img, dim=0)
 
-    # read class_indict
-    json_path = './FlowCls/Datasets/class_indices.json'
-    assert os.path.exists(json_path), "file: '{}' dose not exist.".format(json_path)
-    json_file = open(json_path, "r")
-    class_indict = json.load(json_file)
+    class_indict = {
+        "0": "daisy",
+        "1": "dandelion",
+        "2": "roses",
+        "3": "sunflowers",
+        "4": "tulips"
+    }
 
     return img, class_indict
 
 
-def inf(img_path):
-
+def inf(img_path,checkpoint="./FlowCls/models/model-9.pth"):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    checkpoint = "./FlowCls/models/model-9.pth"
     model = load_model(checkpoint, device)
-    
+
     img, class_indict = load_img(img_path)
 
     model.eval()
@@ -60,11 +58,7 @@ def inf(img_path):
 
     print_res = "class: {}   prob: {:.3}".format(class_indict[str(predict_cla)],
                                                  predict[predict_cla].numpy())
-    # for i in range(len(predict)):
-    #     print("class: {:10}   prob: {:.3}".format(class_indict[str(i)],
-    #                                               predict[i].numpy()))
     return print_res
-
 
 # def main():
 #     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
